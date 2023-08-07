@@ -8,7 +8,9 @@ export default {
     extend: {
       colors: {
         "mainBackgroundColor": '#0d1117',
-        "columnBackgroundColor":'#161c22'
+        "columnBackgroundColor":'#161c22',
+        "bubble-gum": '#ff77e9'
+
       }
     },
   },
