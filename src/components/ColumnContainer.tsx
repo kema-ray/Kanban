@@ -5,17 +5,19 @@ import { CSS } from "@dnd-kit/utilities";
 import { useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
 import TaskCard from "./TaskCard";
+// import { Button } from "@mui/material";
 
 interface Props {
     column: Column
     deleteColumn: (id: Id) => void;
     updateColumn: (id: Id, title: string) => void
     createTask: (columnId: Id) => void;
+    deleteTask: (id: Id) => void;
     tasks: Task[];
 }
 
 function ColumnContainer(props: Props) {
-    const { column, deleteColumn, updateColumn, createTask, tasks } = props;
+    const { column, deleteColumn, updateColumn, createTask, tasks, deleteTask } = props;
 
     const [editMode, setEditMode] = useState(false);
 
@@ -117,7 +119,7 @@ function ColumnContainer(props: Props) {
         </div>
         <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
             {tasks.map((task) => (
-                <TaskCard key={task.id} task={task}/>
+                <TaskCard key={task.id} task={task} deleteTask={deleteTask}/>
             ))
         }</div>
 
@@ -126,6 +128,9 @@ function ColumnContainer(props: Props) {
             createTask(column.id);
         }}
         ><PlusIcon />Add Task</button>
+        {/* <Button onClick={() => {
+            createTask(column.id);
+        }} variant="contained">Add Task</Button> */}
       </div>
     )
 }
