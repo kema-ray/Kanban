@@ -5,6 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { useMemo, useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
 import TaskCard from "./TaskCard";
+import ClearIcon from "../icons/ClearIcon";
 // import { Button } from "@mui/material";
 
 interface Props {
@@ -14,17 +15,19 @@ interface Props {
     createTask: (columnId: Id) => void;
     updateTask: (id: Id, content: string) => void;
     deleteTask: (id: Id) => void;
+    clearTasks: (id: Id) => void;
     tasks: Task[];
 }
 
 function ColumnContainer(props: Props) {
-    const { column, deleteColumn, updateColumn, createTask, tasks, deleteTask, updateTask } = props;
+    const { column, deleteColumn, updateColumn, createTask, tasks, deleteTask, updateTask, clearTasks } = props;
 
     const [editMode, setEditMode] = useState(false);
-
+    const [clearingTasks, setClearingTasks] = useState(false);
     const taskIds = useMemo(() => {
         return tasks.map((task) => task.id);
     }, [tasks])
+
 
     const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
         id: column.id,
@@ -78,7 +81,9 @@ function ColumnContainer(props: Props) {
         {...attributes}
         {...listeners}
         onClick={() => {
-            setEditMode(true);
+            if (!clearingTasks) {
+                setEditMode(true);
+            }
         }}
         className="
         bg-mainBackgroundColor
@@ -96,8 +101,8 @@ function ColumnContainer(props: Props) {
         justify-between
         "
         >
-        {!editMode && column.title}
-        {editMode && (
+        {column.title}
+        {editMode && !clearingTasks && (
         <input className="bg-white focus:border-rose-500 border-rounded outline-none px-2"
         value={column.title}
         onChange={(e) => updateColumn(column.id, e.target.value)}
@@ -108,6 +113,7 @@ function ColumnContainer(props: Props) {
             if (e.key !== "Enter") return;
             setEditMode(false);
         }}
+        disabled={clearingTasks}
         />
          )}
         <button onClick={() => {
@@ -118,10 +124,33 @@ function ColumnContainer(props: Props) {
         hover:stroke-white
         hover:bg-columnBackgroundColor
         rounded
-        px-1
-        py-2
+        py-2 px-4
+        right-1
+        
         "><TrashIcon /></button>
+        <button
+            onClick={() => {
+            clearTasks(column.id);
+            setClearingTasks(true);
+    }}
+    className="
+      stroke-gray-500
+      hover:stroke-white
+      hover:bg-columnBackgroundColor
+      rounded
+      py-2 px-4
+      ml-2
+      hover:ring-inset
+      hover:ring-rose-500
+    "
+  ><ClearIcon />
+    {/* Clear Tasks */}
+  </button>
+        {/* <button className="ml-2">Clear</button> */}
         </div>
+
+        {/* Second attempt */}
+
         <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
             <SortableContext items={taskIds}>
                 {tasks.map((task) => (

@@ -17,6 +17,10 @@ function KanbanBoard() {
 
     const [activeColumn, setActiveColumn] = useState<Column | null>(null);
     const [activeTask, setActiveTask] = useState<Task | null>(null);
+
+    // const clearColumn = () => {
+    //     setTasks([]);
+    // };
     // console.log(columns)
     const sensors = useSensors(useSensor(PointerSensor, {
         activationConstraint: {
@@ -43,6 +47,7 @@ function KanbanBoard() {
                                 createTask={createTask}
                                 deleteTask={deleteTask}
                                 updateTask={updateTask}
+                                clearTasks={clearTasks}
                                 tasks={tasks.filter((task) => task.columnId === col.id)}
                                  />
                             ))}
@@ -84,6 +89,7 @@ function KanbanBoard() {
                                 createTask={createTask}
                                 deleteTask={deleteTask}
                                 updateTask={updateTask}
+                                clearTasks={clearTasks}
                                 tasks={tasks.filter((task) =>
                                     task.columnId === activeColumn.id)}
                          />
@@ -111,6 +117,10 @@ function KanbanBoard() {
             content: `Task ${tasks.length + 1}`,
         }
         setTasks([...tasks, newTask]);
+    }
+
+    function clearTasks(columnId: Id) {
+        setTasks((tasks) => tasks.filter((task) => task.columnId !== columnId));
     }
 
     function deleteTask(id: Id) {
