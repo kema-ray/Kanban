@@ -43,7 +43,7 @@ const cardSlice = createSlice({
         addAllColumns(state, action: PayloadAction<Column[]>){
             action?.payload?.map((column) => state.columns.push(column));
         },
-        updateColumn(state, action:PayloadAction<{ columnId: string; newTitle: string }>) {
+        updateColumnTitle(state, action:PayloadAction<{ columnId: any; newTitle: string }>) {
             const { columnId, newTitle } = action.payload;
             const column = state.columns.find(col => col.id === columnId);
             if (column) {
@@ -67,7 +67,19 @@ const cardSlice = createSlice({
               column.tasks.push(newTasks);
             }
         },
-        updateNewTask(state, action: PayloadAction<{ taskId: string; newContent: string }>) {
+        updateTaskColumn(state, action: PayloadAction<{ taskId: any; newColumnId: any }>) {
+          const { taskId, newColumnId } = action.payload;
+
+          // Find the task and update its column
+          for (const column of state.columns) {
+              const task = column.tasks.find((t) => t.id === taskId);
+              if (task) {
+                  task.columnId = newColumnId;
+                  break;
+              }
+          }
+      },
+        updateNewTask(state, action: PayloadAction<{ taskId: any; newContent: string }>) {
             const { taskId, newContent } = action.payload;
             for (const column of state.columns) {
               const task = column.tasks.find(t => t.id === taskId);
@@ -77,7 +89,7 @@ const cardSlice = createSlice({
               }
             }
         },
-        deleteAddedTask(state, action: PayloadAction<{ taskId: string }>) {
+        deleteAddedTask(state, action: PayloadAction<{ taskId: any }>) {
             const { taskId } = action.payload;
             for (const column of state.columns) {
               column.tasks = column.tasks.filter(task => task.id !== taskId);
@@ -106,38 +118,28 @@ const cardSlice = createSlice({
                 toColumn.tasks.push(task);
               }
             }
+          },
+          clearTasksInColumn(state, action) {
+            const columnId = action.payload;
+            const column = state.columns.find(col => col.id === columnId);
+            if (column) {
+                column.tasks = [];
+            }
           },        
-        // dragAddedEvent(
-        //     state, action: PayloadAction<{taskID: string; fromColumnID:string; toColumnID: string;}>
-        // ) {
-        //     const {taskID, fromColumnID,toColumnID} = action.payload;
-        //     const fromColumn = state.columns.find((col) => col.id === fromColumnID);
-        //     const toColumn = state.columns.find((col) => col.id === toColumnID);
-
-        //     if (fromColumn && toColumn) {
-        //         const taskIndex = fromColumn.tasks.findIndex(
-        //           (task) => task.id === taskID
-        //         );
-        
-        //         if (taskIndex !== -1) {
-        //           const task = fromColumn.tasks.splice(taskIndex, 1)[0];
-        //           toColumn.tasks.push(task);
-        //         }
-        //       }
-        //     },
     }
 })
 
 export const {
     addColumn,
     addAllColumns,
-    updateColumn,
+    updateColumnTitle,
     deleteAllColumn,
     addNewTask,
     updateNewTask,
+    updateTaskColumn,
     deleteAddedTask,
     dragTaskBetweenColumns,
-        // dragAddedEvent,
+    clearTasksInColumn,
 } = cardSlice.actions;
 
 export default cardSlice.reducer;

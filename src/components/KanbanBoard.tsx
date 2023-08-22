@@ -1,34 +1,15 @@
 import { DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { Button } from "@mui/material";
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { createPortal } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import PlusIcon from "../icons/PlusIcon";
-import { addAllColumns, dragTaskBetweenColumns } from "../Redux/cardSlice";
+import { addAllColumns, clearTasksInColumn, deleteAddedTask, dragTaskBetweenColumns, updateNewTask, } from "../Redux/cardSlice";
 import { Column, Id, Task } from "../types";
 import ColumnContainer from "./ColumnContainer";
 import TaskCard from "./TaskCard";
-// import cardSlice, { addAllColumns, addNewTask } from "../Redux/cardSlice";
-// import { createSlice } from "@reduxjs/toolkit";
 
-const defaultCols: Column[] = [
-    {
-      id: "todo",
-      title: "Todo",
-      tasks: []
-    },
-    {
-      id: "doing",
-      title: "Work in progress",
-      tasks: []
-    },
-    {
-      id: "done",
-      title: "Done",
-      tasks: []
-    },
-  ];
   
   const defaultTasks: Task[] = [
     {
@@ -109,7 +90,7 @@ function KanbanBoard() {
     const dispatch = useDispatch();
     const columns = useSelector((state: any) => state.cards.columns)
 
-    // const [columns, setColumns]=useState<Column[]>(storedCols);
+    // const [columns, setColumns]=useState<Column[]>([]);
     const columnsId = useMemo(() => columns.map((col: any) => col.id),
     [columns])
     const [tasks, setTasks] = useState<Task[]>(defaultTasks);
@@ -204,14 +185,34 @@ function KanbanBoard() {
 
     function clearTasks(columnId: Id) {
         setTasks((tasks) => tasks.filter((task) => task.columnId !== columnId));
+        dispatch(clearTasksInColumn(columnId));
     }
 
     function deleteTask(id: Id) {
-        const newTasks = tasks.filter((task) => task.id !== id);
-        setTasks(newTasks);
-        // dispatch(deleteAdde({ taskId: id }));
-        // dispatch(deleteAddedTask({ taskId: tasks.id }));
+      const newTasks = tasks.filter((task) => task.id !== id);
+      setTasks(newTasks);
+      dispatch(deleteAddedTask({ taskId: id }));
     }
+
+    // function deleteTask(columnsId: any, taskId: any,) {
+    //   dispatch(deleteAddedTask({ taskId}));
+    //   console.log(taskId);
+    //   id: Id
+    //   const newTasks = tasks.filter((task) => task.id !== id);
+    //   setTasks(newTasks);
+    //   const updatedColumns = columns.map((col: any) => {
+    //     if (col.id === columnsId) {
+    //         return {
+    //             ...col,
+    //             tasks: col.tasks.filter((task: any) => task.id !== taskId),
+    //         };
+    //     }
+    //     return col;
+    // });
+    // columns(updatedColumns);
+    //     dispatch(deleteAdde({ taskId: id }));
+    //     dispatch(deleteAddedTask({ taskId: tasks.id }));
+    // }
 
   //   function deleteTaskFromRedux(taskId: Id) {
   //     dispatch(deleteAddedTask({ taskId }));
@@ -224,6 +225,7 @@ function KanbanBoard() {
         });
 
         setTasks(newTasks);
+        dispatch(updateNewTask({ taskId: id, newContent: content }));
     }
 
     function createNewColumn() {
@@ -273,8 +275,12 @@ function KanbanBoard() {
         const { active, over } = event;
         if (!over) return;
 
-        const activeColumnId = active.id;
+        const activeColumnId = active.data.current?.id;
         const overColumnId = over.id;
+
+        // if (activeTask) {
+        //   dispatch(updateTaskColumn({ taskId: activeTask, newColumnId: overColumnId }));
+        // }
 
         if (activeColumnId === overColumnId) return;
 

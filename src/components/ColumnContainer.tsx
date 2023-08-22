@@ -8,7 +8,7 @@ import TaskCard from "./TaskCard";
 import ClearIcon from "../icons/ClearIcon";
 
 import { useDispatch } from "react-redux";
-import { addNewTask, deleteAllColumn } from "../Redux/cardSlice";
+import { addNewTask, deleteAllColumn, updateColumnTitle } from "../Redux/cardSlice";
 
 interface Props {
     column: Column
@@ -22,13 +22,15 @@ interface Props {
 }
 
 function ColumnContainer(props: Props) {
-    const { column, deleteColumn, updateColumn, createTask, tasks, deleteTask, updateTask, clearTasks } = props;
-
+    const { column, updateColumn, createTask, tasks, deleteTask, updateTask, clearTasks } = props;
+    // deleteColumn
     const [editMode, setEditMode] = useState(false);
     const [clearingTasks, setClearingTasks] = useState(false);
     const taskIds = useMemo(() => {
         return tasks.map((task) => task.id);
     }, [tasks])
+
+    // const dispatch = useDispatch;
 
 
     const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
@@ -43,13 +45,14 @@ function ColumnContainer(props: Props) {
     const style = {
         transition,
         transform: CSS.Transform.toString(transform),
+        height: "100%"
     };
 
     if (isDragging) {
         return(
             <div ref={setNodeRef}
             style={style}
-            className="bg-columnBackgroundColor opacity-60 border-2 border-rose-500 w-[350px] h-[500px] max-h-[500px] rounded-mdflex flex-col">
+            className="bg-columnBackgroundColor opacity-60 border-2 border-gray-300 w-[350px] h-[500px] max-h-[500px] rounded-md flex flex-col">
             </div>
         )
     }
@@ -57,7 +60,10 @@ function ColumnContainer(props: Props) {
     const dispatch = useDispatch();
 
     return (
-        <div className="bg-columnBackgroundColor border-2 border-pink-500 w-[400px] h-[500px] max-h-[500px] rounded-md flex flex-col">
+        <div
+        ref={setNodeRef}
+        style={style}
+        className="bg-columnBackgroundColor border-2 border-gray-300 w-[400px] h-[500px] max-h-[500px] rounded-md flex flex-col">
       <div
       {...attributes}
       {...listeners}
@@ -66,8 +72,9 @@ function ColumnContainer(props: Props) {
             setEditMode(true);
           }
         }}
-        className="bg-mainBackgroundColor text-md h-[60px] cursor-grab rounded-md rounded-b-none p-3 font-bold border-columnBackgroundColor border-4 flex items-center justify-between relative"
+        className="bg-mainBackgroundColor text-sm h-[60px] cursor-grab rounded-md rounded-b-none p-3 font-bold border-columnBackgroundColor border-4 flex items-center justify-between relative"
       >
+        {/* {column.title} */}
         {editMode && !clearingTasks ? (
           <input
             className="bg-white focus:border-rose-500 border-rounded outline-none px-2"
@@ -76,6 +83,7 @@ function ColumnContainer(props: Props) {
             autoFocus
             onBlur={() => {
               setEditMode(false);
+              dispatch(updateColumnTitle({ columnId: column.id, newTitle: column.title }));
             }}
             onKeyDown={(e) => {
               if (e.key !== 'Enter') return;
@@ -84,23 +92,23 @@ function ColumnContainer(props: Props) {
             disabled={clearingTasks}
           />
         ) : (
-          <span>{column.title}</span>
+          <span className="text-gray-300">{column.title}</span>
         )}
-        <div>
-          <button
+        <div className="flex items-center gap-2">
+          <button title="Delete Column"
             onClick={() => {
               dispatch(deleteAllColumn(column.id));
             }}
-            className="stroke-gray-500 hover:stroke-white hover:bg-columnBackgroundColor rounded py-2 px-4 right-1"
+            className="stroke-gray-500 hover:stroke-white hover:bg-columnBackgroundColor rounded"
           >
             <TrashIcon />
           </button>
-          <button
+          <button title="Clear Column"
             onClick={() => {
               clearTasks(column.id);
               setClearingTasks(true);
             }}
-            className="stroke-gray-500 hover:stroke-white hover:bg-columnBackgroundColor rounded py-2 px-4 ml-2"
+            className="stroke-gray-500 hover:stroke-white hover:bg-columnBackgroundColor rounded"
           >
             <ClearIcon />
           </button>
@@ -118,7 +126,7 @@ function ColumnContainer(props: Props) {
             </SortableContext>
         </div>
 
-        <button className="flex gap-2 items-center border-columnBackgroundColor border-2 rounded-md p-4 border-x-columnBackgroundColor hover:bg-mainBackgroundColor hover:text-rose-500 active:bg-black"
+        <button className="flex gap-2 items-center border-columnBackgroundColor border-2 rounded-md p-4 border-x-columnBackgroundColor text-gray-300 hover:text-sky-600 active:bg-black"
         onClick={() => {
             dispatch(addNewTask({ columnID: column.id, taskTitle: `New Task` }));
             // dispatch(addNewTask({ columnID: column.id.toString(), taskTitle: `New Task` }));

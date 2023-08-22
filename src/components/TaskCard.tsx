@@ -41,7 +41,7 @@ function TaskCard({ task, deleteTask, updateTask }: Props) {
             style={style}
             className="
             opacity-30
-          bg-mainBackgroundColor p-2.5 h-[100px] min-h-[100px] items-center flex text-left rounded-xl border-2 border-rose-500  cursor-grab relative
+          bg-slate-800 p-2.5 h-[100px] min-h-[100px] items-center flex text-left rounded-xl border-2 border-gray-300  cursor-grab relative
           "
           />
         );
@@ -54,9 +54,9 @@ function TaskCard({ task, deleteTask, updateTask }: Props) {
                 style={style}
                 {...attributes}
                 {...listeners}
-                className="bg-mainBackgroundColor p-2.5 h-[100px]
+                className="bg-slate-800 p-2.5 h-[100px]
                 min-h-[100px] items-center flex text-left rounded-xl
-                hover: ring-2 hover:ring-inset hover:ring-rose-500 
+                hover: ring-2 hover:ring-inset hover:ring-sky-500 
                 relative cursor-grab">
                     <textarea 
                     className="
@@ -85,9 +85,9 @@ function TaskCard({ task, deleteTask, updateTask }: Props) {
         {...attributes}
         {...listeners}
         onClick={toggleEditMode}
-        className="bg-mainBackgroundColor p-2.5 h-[100px]
+        className="bg-slate-800 p-2.5 h-[100px]
         min-h-[100px] items-center flex text-left rounded-xl
-        hover: ring-2 hover:ring-inset hover:ring-rose-500 
+        hover: ring-2 hover:ring-inset hover:ring-gray-300 
         relative cursor-grab task"
         onMouseOver={() => {
             setMouseIsOver(true);
@@ -96,7 +96,7 @@ function TaskCard({ task, deleteTask, updateTask }: Props) {
             setMouseIsOver(false);
         }}
         >
-            <p className="my-auto h-[90%] w-full overflow-y-auto
+            <p className="my-auto text-gray-300 h-[90%] w-full overflow-y-auto
             overflow-x-hidden whitespace-pre-wrap">
                 {task.content}
             </p>
