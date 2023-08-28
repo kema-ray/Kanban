@@ -238,7 +238,7 @@ function KanbanBoard() {
             dispatch(addAllColumns([columnToAdd]));
     }
 
-    function deleteColumn(id: Id) {
+    function deleteColumn() {
         // const filteredColumns = columns.filter((col) => col.id !== id);
         // setColumns(filteredColumns);
 
@@ -253,7 +253,7 @@ function KanbanBoard() {
             if (col.id !== id) return col;
             return{...col, title};
         });
-        // setColumns(newColumns);
+        newColumns(newColumns);
     }
 
     function onDragStart(event: DragStartEvent) {
